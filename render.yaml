@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: library-management
+    env: python
+    buildCommand: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate
+    startCommand: gunicorn library_management.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: library_db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: DJANGO_SETTINGS_MODULE
+        value: library_management.settings
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - requirements.txt
+        - '**/*.py'
+        - '**/*.html'
+    staticPublishPath: ./staticfiles  # For serving static files
+    disk:
+      name: library-data
+      mountPath: /opt/render/project/src/media
+      sizeGB: 1  # For storing uploaded book images
+
+databases:
+  - name: library_db
+    databaseName: library_management
+    user: library_user
+    plan: free
+    ipAllowList: []  # optional (allows all)
