@@ -1,5 +1,14 @@
 services:
   - type: web
+    name: library-management
+    env: python
+    buildCommand: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      mkdir -p staticfiles media
+      python manage.py collectstatic --noinput
+      python manage.py migrate --noinput
+    startCommand: cd /opt/render/project/src && gunicorn --workers 2 --threads 2 library_management.wsgi:application  - type: web
     name: Library-Management-System
     env: python
     buildCommand: |
