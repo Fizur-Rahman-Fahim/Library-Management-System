@@ -24,7 +24,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-(r!l7u76k_b4&utic3b-1t3d&y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') + ['.onrender.com']
+ALLOWED_HOSTS = ['*']  # For development and testing. In production, use specific domains
 
 # Application definition
 
@@ -81,10 +81,16 @@ DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         conn_max_age=600,
-        conn_health_checks=True,
-        ssl_require=True,
     )
 }
+
+# Update database configuration for SSL in production
+if not DEBUG:
+    DATABASES['default'].update({
+        'OPTIONS': {
+            'sslmode': 'require'
+        }
+    })
 
 
 # Password validation
@@ -121,7 +127,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
@@ -129,7 +135,15 @@ STATICFILES_DIRS = [
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Ensure STATIC_ROOT exists
+STATIC_ROOT.mkdir(parents=True, exist_ok=True)
+
+# Configure static files handling
+if not DEBUG:
+    # Enable WhiteNoise's GZip compression
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 

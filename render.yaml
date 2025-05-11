@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: library-management
+    name: Library-Management-System
     env: python
     buildCommand: |
       python -m pip install --upgrade pip
@@ -17,12 +17,14 @@ services:
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
-      - key: DJANGO_DEBUG
+      - key: DEBUG
         value: false
       - key: ALLOWED_HOSTS
-        value: .onrender.com
+        value: "*"
       - key: DJANGO_SETTINGS_MODULE
         value: library_management.settings
+      - key: PYTHONUNBUFFERED
+        value: true
     autoDeploy: true
     buildFilter:
       paths:
