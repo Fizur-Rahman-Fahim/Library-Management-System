@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  My Borrowed Books
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Current Balance: ${{ user.balance }}</h5>
+              <a href="{% url 'user:deposit_money' %}" class="btn btn-success">Deposit Money</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">My Borrowed Books</h4>
+            <a href="{% url 'library:book_list' %}" class="btn btn-light">Browse More Books</a>
+          </div>
+          <div class="card-body">
+            {% if borrowed_books %}
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Book Cover</th>
+                      <th>Title</th>
+                      <th>Category</th>
+                      <th>Borrowed Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for borrowed in borrowed_books %}
+                      <tr>
+                        <td style="width: 100px">
+                          {% if borrowed.book.image %}
+                            <img src="{{ borrowed.book.image.url }}" class="img-fluid rounded" alt="{{ borrowed.book.title }}" />
+                          {% endif %}
+                        </td>
+                        <td>{{ borrowed.book.title }}</td>
+                        <td>{{ borrowed.book.category.name }}</td>
+                        <td>{{ borrowed.borrow_date|date:'M d, Y' }}</td>
+                        <td>
+                          {% if borrowed.returned_date %}
+                            <span class="badge bg-success">Returned</span>
+                          {% else %}
+                            <span class="badge bg-warning">Borrowed</span>
+                          {% endif %}
+                        </td>
+                        <td>
+                          <a href="{% url 'library:book_detail' borrowed.book.pk %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                          {% if not borrowed.returned_date %}
+                            <a href="{% url 'library:return_book' borrowed.pk %}" class="btn btn-sm btn-outline-success">Return Book</a>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="text-center py-5">
+                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                <h5>You haven't borrowed any books yet</h5>
+                <p class="text-muted">Start your reading journey today!</p>
+                <a href="{% url 'library:book_list' %}" class="btn btn-primary mt-3">Browse Books</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ book.title }}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      {% if book.image %}
+        <img src="{{ book.image.url }}" class="img-fluid rounded" alt="{{ book.title }}" />
+      {% endif %}
+    </div>
+    <div class="col-md-8">
+      <h1 class="mb-3">{{ book.title }}</h1>
+      <p class="lead">{{ book.description }}</p>
+      <div class="mb-3">
+        <strong>Category:</strong> {{ book.category.name }}
+      </div>
+      <div class="mb-3">
+        <strong>Borrowing Price:</strong> ${{ book.borrowing_price }}
+      </div>
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'library:borrow_book' book.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">Borrow Book</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-primary">Login to Borrow</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mt-5">
+    <h3>Reviews</h3>
+    {% for review in book.reviews.all %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">{{ review.user.username }} - {{ review.created_at|date }}</h6>
+          <p class="card-text">{{ review.review_text }}</p>
+        </div>
+      </div>
+    {% empty %}
+      <p>No reviews yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
