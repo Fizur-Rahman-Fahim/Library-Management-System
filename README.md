@@ -30,7 +30,7 @@ A modern library management system built with Django that allows users to browse
 
 1. Clone the repository
 ```bash
-git clone https://github.com/Fizur-Rahman-Fahim/library_management.git
+git clone https://github.com/Fizur-Rahman-Fahim/Library-Management-System.git
 cd library_management
 ```
 
