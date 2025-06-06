@@ -1,0 +1,7 @@
+Django
+Pillow
+python-dotenv
+dj-database-url
+whitenoise
+gunicorn
+psycopg2-binary  # For PostgreSQL on Render
